@@ -1,7 +1,10 @@
-class Recipe
-  attr_reader :name, :description, :rating, :done, :prep_time
+# frozen_string_literal: true
 
-  def initialize(name, description, prep_time = "", rating = "", done = "false")
+# class recipe describes the recipe
+class Recipe
+  attr_reader :name, :description, :done, :prep_time, :rating
+
+  def initialize(name, description, prep_time = '', rating = '', done = 'false')
     @name = name
     @description = description
     @rating = rating
@@ -10,6 +13,10 @@ class Recipe
   end
 
   def make!
-    @done = "true"
+    @done = @done == 'true' ? 'false' : 'true'
+  end
+
+  def rating?
+    @rating == '' ? 'no rating found' : "#{@rating}/5"
   end
 end

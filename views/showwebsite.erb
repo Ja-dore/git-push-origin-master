@@ -1,0 +1,8 @@
+<h2>Wich recipe do you want to add? </h2>
+<form action='/storewebsite' method='post'>
+<% @website_recipes.keys.each do |title| %>
+  <input label='name' type='radio' name='value' value="<%=title%>;<%=@website_recipes[title][0]%>;<%=@website_recipes[title][1]%>;<%=@website_recipes[title][2]%>">
+  <label for='name'><%=title%></label><br>
+<% end %>
+<input type="submit">
+</form>

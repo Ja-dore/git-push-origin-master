@@ -1,23 +1,50 @@
+# frozen_string_literal: true
+
+require 'nokogiri'
+require 'open-uri'
+
+# scrape all the recipes from the website
 class ScrapeAllrecipesService
   def initialize(keyword)
     @keyword = keyword
+    @scraped_recipes = {}
   end
 
   def call
-    url = "https://www.allrecipes.com/search/results/?search=#{@keyword}"
-    html_doc = Nokogiri::HTML(URI.open(url).read)
-    recipes = {}
-    html_doc.search('.card__detailsContainer-left').first(5).each do |card|
-      b = card.search('.review-star-text').children.text.strip.match(/(\d)/)
-      c = b.nil? ? "" : b[0]
-      d = cooking_time(card.search('a').attribute('href').value)
-      recipes[card.search('h3').text.strip] = [card.search('.card__summary').children.text.strip, d, c]
+    define_html.search('.card__detailsContainer-left').first(5).each do |card|
+      @scraped_recipes[search_name(card)] = [search_description(card),
+                                             cooking_time(search_link(card)),
+                                             search_rating(card)]
     end
-    return recipes
+    @scraped_recipes
+  end
+
+  def define_html
+    Nokogiri::HTML(URI.open("https://www.allrecipes.com/search/results/?search=#{@keyword}").read)
+  end
+
+  def shorten(something)
+    something.nil? ? '' : something[0]
   end
 
   def cooking_time(url)
     html_doc = Nokogiri::HTML(URI.open(url).read)
-    return html_doc.search('.recipe-meta-item-body').first.text.strip
+    html_doc.search('.recipe-meta-item-body').first.text.strip
+  end
+
+  def search_name(card)
+    card.search('h3').text.strip
+  end
+
+  def search_description(card)
+    card.search('.card__summary').children.text.strip
+  end
+
+  def search_rating(card)
+    shorten(card.search('.review-star-text').children.text.strip.match(/(\d)/))
+  end
+
+  def search_link(card)
+    card.search('a').attribute('href').value
   end
 end

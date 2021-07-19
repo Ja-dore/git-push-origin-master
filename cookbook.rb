@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require_relative 'recipe'
 require 'csv'
 
+# class cookbook describes the cookbook, the repository
 class Cookbook
   def initialize(csv_file_path)
     @recipes = []
@@ -19,8 +22,8 @@ class Cookbook
     update_csv
   end
 
-  def remove_recipe(recipe_index)
-    @recipes.delete_at(recipe_index)
+  def remove_recipe(index)
+    @recipes.delete_at(index)
     update_csv
   end
 

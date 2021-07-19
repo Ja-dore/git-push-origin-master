@@ -1,13 +1,13 @@
 <h1> Welcome to your cookbook </h1>
 <ul>
-<% @recettes.each do |recipe| %>
+<% @recettes.each_with_index do |recipe, index| %>
   <li>
-   <a href = "/recipe/:recipe" ><%= recipe.name %></a> <br>
-   <a href ="/delete"> <i class="fa fa-trash-o fa-lg"></i></a> <i class="fa fa-arrow-up fa-lg"></i> <i class="fa fa-arrow-down fa-lg"></i> <br>
-   <%= recipe.description %>
+   <a href="/markasdone/<%=index%>"><i class="{{ <%= recipe.done == 'true' ? 'fa fa-check-circle-o fa-lg' : 'fa fa-circle-o fa-lg'%>}}"></i></a>
+   <a href = "/recipe/<%=recipe.name%>/<%=index%>" ><%= recipe.name %></a> <br>
+   <a href ="/delete/<%=index%>"> <i class="fa fa-trash-o fa-lg"></i></a> <i class="fa fa-arrow-up fa-lg"></i>
+   <i class="fa fa-arrow-down fa-lg"></i>
   </li>
 <% end %>
 </ul>
-<a href ='/create'>Add recipe</button>
-
-<form action="/store" method="post">
+<a href = '/create'><button>Add recipe</button></a>
+<a href = '/websiteadd'><button>Add recipe from website</button></a>

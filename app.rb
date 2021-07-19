@@ -1,55 +1,66 @@
-require "sinatra"
-require "sinatra/reloader" if development?
-require "pry-byebug"
-require "better_errors"
+# frozen_string_literal: true
+
+require 'sinatra'
+require 'sinatra/reloader' if development?
+require 'pry-byebug'
+require 'better_errors'
 configure :development do
   use BetterErrors::Middleware
-  BetterErrors.application_root = File.expand_path('..', __FILE__)
+  BetterErrors.application_root = File.expand_path(__dir__)
 end
 require_relative 'cookbook'
 require_relative 'recipe'
+require_relative 'service'
 # require_relative '../lib/view'
 csv_file = File.join(__dir__, 'recipes.csv')
 cookbook = Cookbook.new(csv_file)
 
 get '/' do
   @recettes = cookbook.all
-  erb :index
+  erb :index, layout: :layout
 end
 
 get '/create' do
-  erb :create
+  erb :create, layout: :layout
 end
 
-# get '/about' do
-#   erb :about
-# end
-
-post '/about' do
-  erb :about
+get '/delete/:index' do
+  cookbook.remove_recipe(params[:index].to_i)
+  redirect to '/'
 end
 
-get '/recipe/:recipe' do
-puts params[:recipe]
-"the recipe is #{params[:recipe]}"
+get '/recipe/:recipe/:index' do
+  @recet = params[:recipe]
+  @index = params[:index].to_i
+  @recettes = cookbook.all
+  erb :recipe
 end
 
 post '/store' do
   recipe = Recipe.new(params[:name], params[:description], params[:prep_time], params[:rating])
   cookbook.add_recipe(recipe)
   redirect to '/'
-  erb :store
 end
 
-# require_relative 'cookbook'    # You need to create this file!
-# require_relative 'controller'  # You need to create this file!
-# require_relative 'router'
+get '/websiteadd' do
+  erb :websiteadd
+end
 
-# csv_file   = File.join(__dir__, 'recipes.csv')
-# cookbook   = Cookbook.new(csv_file)
-# controller = Controller.new(cookbook)
+post '/showwebsite' do
+  scrape = ScrapeAllrecipesService.new(params[:ingredient])
+  @website_recipes = scrape.call
+  erb :showwebsite
+end
 
-# router = Router.new(controller)
+post '/storewebsite' do
+  array_strings = params[:value].split(';')
+  recipe = Recipe.new(array_strings[0], array_strings[1], array_strings[2], array_strings[3])
+  cookbook.add_recipe(recipe)
+  redirect to '/'
+end
 
-# # Start the app
-# router.run
+get '/markasdone/:index' do
+  @test = params[:index].to_i
+  cookbook.update_recipe(@test)
+  redirect to '/'
+end
