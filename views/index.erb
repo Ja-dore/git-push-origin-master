@@ -1,0 +1,13 @@
+<h1> Welcome to your cookbook </h1>
+<ul>
+<% @recettes.each do |recipe| %>
+  <li>
+   <a href = "/recipe/:recipe" ><%= recipe.name %></a> <br>
+   <a href ="/delete"> <i class="fa fa-trash-o fa-lg"></i></a> <i class="fa fa-arrow-up fa-lg"></i> <i class="fa fa-arrow-down fa-lg"></i> <br>
+   <%= recipe.description %>
+  </li>
+<% end %>
+</ul>
+<a href ='/create'>Add recipe</button>
+
+<form action="/store" method="post">
